@@ -42,7 +42,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<String> notificationList = [];
+  List<String?> notificationList = [];
   late FirebaseMessaging messaging;
   String? notificationText;
   @override
@@ -56,6 +56,9 @@ class _MyHomePageState extends State<MyHomePage> {
     FirebaseMessaging.onMessage.listen((RemoteMessage event) {
       print("message recieved");
       print(event.notification!.body);
+      setState(() {
+        notificationList.add(event.notification!.body);
+      });
       print(event.data);
       var type = (event.data)['notificationType'];
       showDialog(
@@ -116,15 +119,20 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Column(
         children: <Widget>[
-          Center(child: Text("Notification Tutorial")),
-          /*ElevatedButton(
-            onPressed: onPressed, 
-            child: Text("Regular"),
-          ),*/
-          /*ElevatedButton(
-            onPressed: onPressed, 
-            child: Text("Important"),
-          ),*/
+          Text("Notification History: "),
+          SizedBox(
+            height: 250,
+            child: ListView.builder(
+              padding: const EdgeInsets.all(8),
+              itemCount: notificationList.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                  height: 30,
+                  child: Center(child: Text('Notification #${index + 1}: ${notificationList[index]}')),
+                );
+              }
+            ),
+            ),
         ],
       ),
     );
