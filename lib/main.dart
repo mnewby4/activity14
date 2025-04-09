@@ -2,6 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'firebase_options.dart';
+//implement a notification in a different way, customize its type and display a different UI
+//one regular one important [do online]
 
 Future<void> _messageHandler(RemoteMessage message) async {
   print('background message ${message.notification!.body}');
@@ -40,6 +42,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  List<String> notificationList = [];
   late FirebaseMessaging messaging;
   String? notificationText;
   @override
@@ -53,6 +56,35 @@ class _MyHomePageState extends State<MyHomePage> {
     FirebaseMessaging.onMessage.listen((RemoteMessage event) {
       print("message recieved");
       print(event.notification!.body);
+      print(event.data);
+      var type = (event.data)['notificationType'];
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              backgroundColor: Colors.red, 
+              title: type == "regular" ? Text("Regular Notification") : Text("URGENT MESSAGE"),
+              content: Text(event.notification!.body!),
+              actions: [
+                TextButton(
+                  child: type == "regular" ? Text("OK!") : Text("Understood.", style: TextStyle(color: Colors.white)),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          });
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      print('Message clicked!');
+    });
+  }
+
+  void _regularNotif() {
+    FirebaseMessaging.onMessage.listen((RemoteMessage event) {
+      print("message recieved");
+      print(event.notification!.body);
       print(event.data.values);
       showDialog(
           context: context,
@@ -62,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
               content: Text(event.notification!.body!),
               actions: [
                 TextButton(
-                  child: Text("Ok"),
+                  child: Text("OK!"),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -82,7 +114,19 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title!),
       ),
-      body: Center(child: Text("Messaging Tutorial")),
+      body: Column(
+        children: <Widget>[
+          Center(child: Text("Notification Tutorial")),
+          /*ElevatedButton(
+            onPressed: onPressed, 
+            child: Text("Regular"),
+          ),*/
+          /*ElevatedButton(
+            onPressed: onPressed, 
+            child: Text("Important"),
+          ),*/
+        ],
+      ),
     );
   }
 }
