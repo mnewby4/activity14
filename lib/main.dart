@@ -43,6 +43,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<String?> notificationList = [];
+  List<String?> notificationMsgs = [];
   late FirebaseMessaging messaging;
   String? notificationText;
   @override
@@ -132,9 +133,27 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               }
             ),
+          ),
+          SizedBox(
+            height: 250,
+            child: ListView.builder(
+              padding: const EdgeInsets.all(8),
+              itemCount: notificationMsgs.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                  height: 30,
+                  child: Center(child: Text('Message #${index + 1}: ${notificationMsgs[index]}')),
+                );
+              }
             ),
+          ),
         ],
       ),
     );
   }
 }
+/*
+  notif icons
+  Xnotification history
+  notif actions/buttons???????
+ */
